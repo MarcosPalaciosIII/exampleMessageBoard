@@ -45,15 +45,9 @@
       <div>
         <label for="spriteTypeInput">Sprite Type</label>
         <select name="spriteType" id="spriteTypeInput">
-          <option value="male">Male</option>
-          <option value="female">Female</option>
-          <option value="identicon">Identicon</option>
-          <option value="initials">Initials</option>
-          <option value="bottts">Bottts</option>
-          <option value="avataaars">Avataaars</option>
-          <option value="jdenticon">Jdenticon</option>
-          <option value="gridy">Gridy</option>
-          <option value="code">Code</option>
+          {{#each avatarSelectors.selector}}
+          <option value="{{this.value}}">{{this.name}}</option>
+          {{/each}}
         </select>
       </div>
 
@@ -65,9 +59,9 @@
       <div>
         <label for="moodInput">Mood</label>
         <select name="mood" id="moodInput">
-          <option value="happy">Happy</option>
-          <option value="sad">Sad</option>
-          <option value="surprised">Surprised</option>
+          {{#each avatarSelectors.mood}}
+          <option value="{{this.value}}">{{this.name}}</option>
+          {{/each}}
         </select>
       </div>
     </div>

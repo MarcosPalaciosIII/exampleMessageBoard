@@ -2,12 +2,35 @@ const express = require("express");
 const router = express.Router();
 const User = require("../../models/User");
 const cloudUpload = require("../../config/cloudinary-setup");
+const avatarSelectors = require("../../data/random-avatar-selectors");
 
 // Here will create a route to lead to the users profile page in order to allow the user to modify and update their information.
 // Since we have currentUser set up as a local variable in the app.js, we will not have to get the users details from the DB prior to loading the details page.
 // this route will allow the current user to view their profile and also be able to edit their profile.
 router.get("/profile", (req, res, next) => {
-    res.render("users/userProfile");
+    // here I will create a variable in session called avatarSelectors in order to pass it as a variable in order to use the data in user profile. Since this is the route that will run every time that I load the users profile, there will be no need to have to add this line somewhere else.
+
+    // now we will create an object that we can use for both the value and display name of the selector properties that we created our data file for.
+    const avatarObject = {
+        selector: [],
+        mood: []
+    };
+
+    // we have to iterate over the original array to create another array of names that has the first letter of the string capitalized so that it will display the name correctly instead of everything in lowercase.
+    for (let elem of avatarSelectors.avatarType) {
+        avatarObject.selector.push({
+            value: elem,
+            name: `${elem.charAt(0).toUpperCase()}${elem.slice(1)}`
+        });
+    }
+    // we will do this for both arrays that we are retrieving from our data file
+    for (let elem of avatarSelectors.avatarMood) {
+        avatarObject.mood.push({
+            value: elem,
+            name: `${elem.charAt(0).toUpperCase()}${elem.slice(1)}`
+        });
+    }
+    res.render("users/userProfile", { avatarSelectors: avatarObject });
 });
 
 // this route will be so that we can update the users profile information if they edit any of the fields. Since each sessions user is unique then we can create a route without having to pass the users id in the endpoint.
