@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const User = require("../../models/User");
 const cloudUpload = require("../../config/cloudinary-setup");
-const avatarSelectors = require("../../data/random-avatar-selectors");
+const avatarSelectors = require("../../data/random-avatar-selectors.enum");
 
 // Here will create a route to lead to the users profile page in order to allow the user to modify and update their information.
 // Since we have currentUser set up as a local variable in the app.js, we will not have to get the users details from the DB prior to loading the details page.
