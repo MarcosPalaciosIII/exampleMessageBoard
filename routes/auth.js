@@ -64,38 +64,42 @@ router.post("/signup", (req, res, next) => {
     }
 
     // check if the username is already registered in the database and if so return the message
-    User.findOne({ username }, "username", (err, user) => {
-        if (user !== null) {
-            res.render("auth/signup", {
-                message: "The username already exists"
+    User.findOne({ username: username })
+        .then(user => {
+            if (user !== null) {
+                res.render("auth/signup", {
+                    message: "The username already exists"
+                });
+                return;
+            }
+
+            // if all of the checks have passed we encrypt the password and create a new user
+            const salt = bcrypt.genSaltSync(bcryptSalt);
+            const hashPass = bcrypt.hashSync(password, salt);
+
+            const newUser = new User({
+                username,
+                password: hashPass
             });
-            return;
-        }
 
-        // if all of the checks have passed we encrypt the password and create a new user
-        const salt = bcrypt.genSaltSync(bcryptSalt);
-        const hashPass = bcrypt.hashSync(password, salt);
+            // save new user to the database and then set his session
+            newUser
+                .save()
+                .then(newlyCreatedUser => {
+                    // we will automatically sign in the user after they sign up so that they do not have to later go to login screen after the signup
+                    req.session.user = newlyCreatedUser;
+                    res.redirect("/");
+                })
+                .catch(err => {
+                    console.log(err);
 
-        const newUser = new User({
-            username,
-            password: hashPass
-        });
-
-        // save new user to the database and then set his session
-        newUser
-            .save()
-            .then(newlyCreatedUser => {
-                // we will automatically sign in the user after they sign up so that they do not have to later go to login screen after the signup
-                req.session.user = newlyCreatedUser;
-                res.redirect("/");
-            })
-            .catch(err => {
-                console.log(err);
-
-                // if there was an error we will render the same page the user is on and this time pass a variable that can be used there. In this case it will be a message to display the error
-                res.render("auth/signup", { message: "Something went wrong" });
-            });
-    });
+                    // if there was an error we will render the same page the user is on and this time pass a variable that can be used there. In this case it will be a message to display the error
+                    res.render("auth/signup", {
+                        message: "Something went wrong"
+                    });
+                });
+        })
+        .catch(err => next(err));
 });
 
 router.get("/logout", (req, res) => {
