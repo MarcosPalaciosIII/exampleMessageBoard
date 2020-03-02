@@ -6,7 +6,7 @@
         "start": "node ./bin/www",
         "dev": "DEBUG=messageboardexample:* nodemon ./bin/www",
         "dev-windows": "nodemon ./bin/www",
-        "build": "webpack --config webpack.config.js"
+        "build": "webpack --config ./config/webpack.config.js"
     },
     "dependencies": {
         "axios": "^0.19.2",
@@ -31,8 +31,6 @@
         "serve-favicon": "^2.5.0"
     },
     "devDependencies": {
-        "nodemon": "^1.12.1",
-        "webpack": "^4.41.6",
-        "webpack-cli": "^3.3.11"
+        "nodemon": "^1.12.1"
     }
 }
