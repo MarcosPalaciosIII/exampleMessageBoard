@@ -13,6 +13,11 @@
   {{else}}
   {{#each messages}}
   <div class="messages__message-div">
+    {{#if this.canLike}}
+    <form action="/messages/like-unlike/{{this._id}}" method="POST"><button>Like</button></form>
+    {{else}}
+    <form action="/messages/like-unlike/{{this._id}}" method="POST"><button>UnLike</button></form>
+    {{/if}}
     <h4><a href="/users/profile/{{this.author._id}}">{{this.author.username}}</a></h4>
     <div>
       <h3>{{this.message}}</h3>

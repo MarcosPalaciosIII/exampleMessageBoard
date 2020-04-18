@@ -12,35 +12,37 @@ const messageSchema = new Schema(
         // the user that generated this message
         author: {
             type: Schema.Types.ObjectId,
-            ref: "User"
+            ref: "User",
         },
         // the message to be viewed by users
         message: {
-            type: String
+            type: String,
         },
         // add user._id in order to get the length of the likes array and see how many likes the message has
         likes: {
             type: [
                 {
                     type: Schema.Types.ObjectId,
-                    ref: "User"
-                }
-            ]
+                    ref: "User",
+                },
+            ],
         },
+        // to determine if user is going to like or unlike the message
+        canLike: { type: Boolean },
         // the replies that belong to this message
         replies: {
             type: [
                 {
                     type: Schema.Types.ObjectId,
-                    ref: "Reply"
-                }
-            ]
+                    ref: "Reply",
+                },
+            ],
         },
         // the message board that this message belongs to
         messageBoard: {
             type: Schema.Types.ObjectId,
-            ref: "Board"
-        }
+            ref: "Board",
+        },
     },
     { timestamps: true }
 );

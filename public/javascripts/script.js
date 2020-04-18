@@ -2,7 +2,7 @@ const bodyTag = document.getElementsByTagName("body")[0].attributes[0].value;
 
 document.addEventListener(
     "DOMContentLoaded",
-    event => {
+    (event) => {
         console.log("IronGenerator JS imported successfully!");
 
         setInterval(
@@ -19,7 +19,7 @@ document.addEventListener(
 const checkMessageUpdates = () => {
     // If reply is typed no update happens
     const replyTyped = [...document.getElementsByName("reply")].every(
-        reply => reply.value === ""
+        (reply) => reply.value === ""
     );
 
     // If we are in the messageBoard and there is no reply typing we will get any new messages with AJAX/Axios
@@ -29,16 +29,16 @@ const checkMessageUpdates = () => {
         // Axios get call is made to get any update for the board we are on
         axios
             .get(`${location.origin}${location.pathname}/refresh`)
-            .then(boardInfo => {
+            .then((boardInfo) => {
                 appendInfoToBoardPage(boardInfo);
             })
-            .catch(error =>
+            .catch((error) =>
                 console.log("error retrieving messages", { error })
             );
     }
 };
 
-const appendInfoToBoardPage = boardInfoData => {
+const appendInfoToBoardPage = (boardInfoData) => {
     // Get all the messages in reversed order and select dom element on which to display the messages
     const reversedMessages = boardInfoData.data.messages.reverse();
     const divOfMessages = document.getElementById("boardMessages");
@@ -62,17 +62,21 @@ const appendInfoToBoardPage = boardInfoData => {
         const messageDiv = document.createElement("div");
         messageDiv.className = "messages__message-div";
 
-        messageDiv.innerHTML = `
+        if (message.canLike) {
+            messageDiv.innerHTML = `
+      <form action="/messages/like-unlike/${
+          message._id
+      }" method="POST"><button onclick="likeUnlike(event)">Like</button></form>
       <h4><a href="/users/profile/${message.author._id}">${
-            message.author.username
-        }</a></h4>
+                message.author.username
+            }</a></h4>
       <div>
         <h3>${message.message}</h3>
       </div>
 
       <form action="/messages/delete/${message._id}/${
-            boardInfoData.data._id
-        }" method="POST"><button>X</button></form>
+                boardInfoData.data._id
+            }" method="POST"><button>X</button></form>
 
       <hr class="messages__hr">
       <div>
@@ -80,8 +84,8 @@ const appendInfoToBoardPage = boardInfoData => {
         <h4>${message.replies.length > 0 ? message.replies[0].reply : ""}</h4>
 
         <a href="/messages/details/${message._id}">${
-            message.replies.length
-        } Replies</a>
+                message.replies.length
+            } Replies</a>
 
         <form action="/replies/create/${message._id}">
           <label for="replyInput${index}"> Reply </label>
@@ -91,13 +95,48 @@ const appendInfoToBoardPage = boardInfoData => {
         </form>
       </div>
       `;
+        } else {
+            messageDiv.innerHTML = `
+      <form action="/messages/like-unlike/${
+          message._id
+      }" method="POST"><button onclick="likeUnlike(event)"> UnLike </button>
+      </form>
+      <h4><a href="/users/profile/${message.author._id}">${
+                message.author.username
+            }</a></h4>
+      <div>
+        <h3>${message.message}</h3>
+      </div>
+
+      <form action="/messages/delete/${message._id}/${
+                boardInfoData.data._id
+            }" method="POST"><button>X</button></form>
+
+      <hr class="messages__hr">
+      <div>
+
+        <h4>${message.replies.length > 0 ? message.replies[0].reply : ""}</h4>
+
+        <a href="/messages/details/${message._id}">${
+                message.replies.length
+            } Replies</a>
+
+        <form action="/replies/create/${message._id}">
+          <label for="replyInput${index}"> Reply </label>
+          <input id="replyInput${index}" type="text" name="reply">
+
+          <button onclick="createReply(event)"> Send Reply </button>
+        </form>
+      </div>
+      `;
+        }
 
         divOfMessages.appendChild(messageDiv);
     });
 };
 
 // Note that here Async - Await is being used - this is alternative to the promises and is newer ES syntax
-const createMessage = async event => {
+const createMessage = async (event) => {
     // prevent default behaviour(reload) of the page when a function is called
     event.preventDefault();
 
@@ -125,7 +164,7 @@ const createMessage = async event => {
 };
 
 // new reply creation
-const createReply = async event => {
+const createReply = async (event) => {
     event.preventDefault();
     try {
         // get the text message of the reply
@@ -147,8 +186,22 @@ const createReply = async event => {
     }
 };
 
+const likeUnlike = async (event) => {
+    event.preventDefault();
+    try {
+        const messageId = getIdFromEvent(event);
+
+        await axios.post(
+            `${window.location.origin}/messages/like-unlike/${messageId}`,
+            {}
+        );
+    } catch (error) {
+        console.log("Error while liking message ", { error });
+    }
+};
+
 // this returns the id of the message or board that the event is relating to
-const getIdFromEvent = event => {
+const getIdFromEvent = (event) => {
     // match returns an array from a string of all the elements that match regex that we pass in as argument
     return event.target.form.action.match(/https?.*\/(.*)\??/)[1];
 };
