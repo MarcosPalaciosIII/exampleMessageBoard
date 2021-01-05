@@ -9,7 +9,7 @@
         "build": "webpack --config ./config/webpack.config.js"
     },
     "dependencies": {
-        "axios": "^0.19.2",
+        "axios": "^0.21.1",
         "bcrypt": "^3.0.0",
         "body-parser": "^1.18.3",
         "cloudinary": "^1.14.0",
